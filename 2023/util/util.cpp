@@ -5,7 +5,7 @@ std::vector<std::string> aoc_util::readFile(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
     if (file.is_open()) {
-        std::cout << "Reading in file: " << filename << std::endl;
+        //std::cout << "Reading in file: " << filename << std::endl;
         while (std::getline(file, line)) {
             lines.push_back(line);
         }
@@ -15,7 +15,7 @@ std::vector<std::string> aoc_util::readFile(const std::string& filename) {
         std::cerr << "Unable to open file: " << filename << std::endl;
     }
 
-    std::cout << "Read in " << lines.size() << " lines." << std::endl;
+    //std::cout << "Read in " << lines.size() << " lines." << std::endl;
     return lines;
 }
 
