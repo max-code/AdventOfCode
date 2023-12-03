@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("AdventOfCode/2023")
 
-foreach(day RANGE 0 2)
+foreach(day RANGE 0 25)
     set(day_name "day${day}")
 
     # Add executable for each day

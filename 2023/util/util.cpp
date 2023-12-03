@@ -19,6 +19,26 @@ std::vector<std::string> aoc_util::readFile(const std::string& filename) {
     return lines;
 }
 
+std::string aoc_util::readFileToSingleLine(const std::string& filename) {
+    std::ifstream file(filename);
+    std::stringstream buffer;
+    std::string line, result;
+
+    if (!file) {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return "";
+    }
+
+    while (getline(file, line)) {
+        buffer << line;
+    }
+
+    result = buffer.str();
+    file.close();
+    return result;
+}
+
+
 std::vector<std::string> aoc_util::splitString(const std::string& input, const std::string& regex) {
     const std::regex reg(regex); 
     std::sregex_token_iterator iter(input.begin(), input.end(), reg, -1);

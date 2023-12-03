@@ -12,6 +12,7 @@ namespace aoc_util
 {
 
 	std::vector<std::string> readFile(const std::string&);
+	std::string readFileToSingleLine(const std::string&);
 	std::vector<std::string> splitString(const std::string&, const std::string&);
 
 }
