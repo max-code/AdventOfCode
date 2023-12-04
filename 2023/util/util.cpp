@@ -46,7 +46,10 @@ std::vector<std::string> aoc_util::splitString(const std::string& input, const s
 
     std::vector<std::string> result;
     while (iter != end) {
-        result.push_back(*iter++);
+        std::string token = *iter++;
+        if (!token.empty()) {  // Check if the token is not empty
+            result.push_back(token);
+        }
     }
     return result;
 }

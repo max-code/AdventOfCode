@@ -21,6 +21,7 @@ void part1(const std::string& line) {
         };
 
 
+
         if (std::isdigit(character))
         {
             int currentCharNum = charNum;
@@ -170,107 +171,11 @@ void part2(const std::string& input) {
 
 }
 
-// Part 2 function
-void part2_padded(std::vector<std::string>& input) {
-
-    int gearRatioSum = 0;
-    int lineWidth = 142;
-    int lineCount = 142;
-
-    std::string periods(142, '.');
-    for (std::string& str : input) {
-        str = "." + str + ".";
-    }
-    input.insert(input.begin(), periods);
-    input.push_back(periods);
-
-    using yx = std::pair<int, int>;
-
-
-    const auto expandNumber = [&](const yx& idx) -> std::pair<int, std::vector<yx>>
-    {
-
-        std::string number{ input[idx.first][idx.second] };
-        std::vector<yx> idxs{ idx };
-
-        if (std::isdigit(input[idx.first][idx.second -  1])) {
-            number.insert(number.begin(), input[idx.first][idx.second-1]);
-            idxs.emplace_back(yx{idx.first, idx.second-1});
-            if (std::isdigit(input[idx.first][idx.second - 2])) {
-                number.insert(number.begin(), input[idx.first][idx.second - 2]);
-                idxs.emplace_back(yx{idx.first, idx.second - 2});
-            }
-        }
-
-        if (std::isdigit(input[idx.first][idx.second + 1])) {
-            number.insert(number.end(), input[idx.first][idx.second + 1]);
-            idxs.emplace_back(yx{ idx.first, idx.second + 1 });
-            if (std::isdigit(input[idx.first][idx.second + 2])) {
-                number.insert(number.end(), input[idx.first][idx.second + 2]);
-                idxs.emplace_back(yx{ idx.first, idx.second + 2 });
-            }
-        }
-
-        return { std::stoi(number), idxs };
-    };
-
-
-
-    for (int row = 0; row < lineCount; row++)
-    {
-        for (int characterIdx = 0; characterIdx < lineWidth; characterIdx++){
-            const char character = input[row][characterIdx];
-        
-            if (character == '*')
-            {
-                std::vector<yx> idxsToCheck{ {row, characterIdx-1}/*left*/,{row, characterIdx + 1}/*right*/,
-                                                               {row-1, characterIdx}/*up*/,{row + 1, characterIdx}/*down*/,
-                                                               {row-1, characterIdx - 1}/*up left*/,{row + 1, characterIdx - 1}/*down left*/,
-                                                               {row - 1, characterIdx + 1}/*up right*/,{row + 1, characterIdx + 1}/*down right*/ };
-
-
-                std::vector<int> gearRatios;
-                std::vector<yx> checkedIdxs;
-
-                // For every index to check, if its not been checked before expand the number there if one exists
-                for (auto idx : idxsToCheck)
-                {
-                    if (std::find(checkedIdxs.begin(), checkedIdxs.end(), idx) != checkedIdxs.end())
-                    {
-                        continue;
-                    }
-
-
-                    if (std::isdigit(input[idx.first][idx.second]))
-                    {
-                        auto [num, itterationCheckedIdxs] = expandNumber(idx);
-                        gearRatios.push_back(num);
-                        checkedIdxs.insert(checkedIdxs.end(), itterationCheckedIdxs.begin(), itterationCheckedIdxs.end());
-                    }
-
-                }
-
-                if (gearRatios.size() == 2)
-                {
-                    gearRatioSum += (gearRatios[0] * gearRatios[1]);
-                }
-            }
-
-        }
-    }
-
-    std::cout << gearRatioSum << std::endl;
-
-}
 
 int main() {
     std::string line = aoc_util::readFileToSingleLine("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day3\\input.txt");
     part1(line);
     part2(line);
-
-    auto lines = aoc_util::readFile("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day3\\input.txt");
-    part2_padded(lines);
-
 
     return 0;
 }
