@@ -7,12 +7,15 @@
 #include <string>
 #include <iostream>
 #include <regex>
+#include <chrono>
 
 namespace aoc_util
 {
 
 	std::vector<std::string> readFile(const std::string&);
 	std::string readFileToSingleLine(const std::string&);
+	std::vector<std::string> readFileSplitOnBlankLines(const std::string&);
+
 	std::vector<std::string> splitString(const std::string&, const std::string&);
 
 }

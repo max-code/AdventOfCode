@@ -38,6 +38,41 @@ std::string aoc_util::readFileToSingleLine(const std::string& filename) {
     return result;
 }
 
+std::vector<std::string> aoc_util::readFileSplitOnBlankLines(const std::string& filename) {
+    std::ifstream file(filename);
+    std::vector<std::string> result;
+    std::string line;
+    std::string currentString;
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file" << std::endl;
+        return result;
+    }
+
+    while (getline(file, line)) {
+        if (line.empty()) {
+            if (!currentString.empty()) {
+                result.push_back(currentString);
+                currentString.clear();
+            }
+        }
+        else {
+            if (!currentString.empty()) {
+                currentString += "\n";
+            }
+            currentString += line;
+        }
+    }
+
+    if (!currentString.empty()) {
+        result.push_back(currentString);
+    }
+
+    file.close();
+    return result;
+}
+
+
 
 std::vector<std::string> aoc_util::splitString(const std::string& input, const std::string& regex) {
     const std::regex reg(regex); 
