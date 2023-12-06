@@ -4,9 +4,9 @@
 
 int getGameWinCount(const std::string& line)
 {
-    const std::vector<std::string> game = aoc_util::splitString(line, "[:|]+");
-    const std::vector<std::string> winningNumbers = aoc_util::splitString(game[1], "[\\s]+");
-    const std::vector<std::string> myNumbers = aoc_util::splitString(game[2], "[\\s]+");
+    const std::vector<std::string> game = aoc_util::string::splitString<std::string>(line, ":","\\|");
+    const std::vector<std::string> winningNumbers = aoc_util::string::splitString<std::string>(game[1], "\\s");
+    const std::vector<std::string> myNumbers = aoc_util::string::splitString<std::string>(game[2], "\\s");
 
     int winningCount = 0;
 
@@ -23,11 +23,11 @@ int getGameWinCount(const std::string& line)
 }
 
 // Part 1 function
-void part1(const std::vector<std::string>& lines) {
+void part1(std::vector<std::string>& lines) {
 
     int winningsTotal = 0;
 
-    for (const std::string& line : lines)
+    for (std::string& line : lines)
     {
         const int winningCount = getGameWinCount(line);
         if (winningCount>0) winningsTotal += (std::pow(2, winningCount - 1));
@@ -38,7 +38,7 @@ void part1(const std::vector<std::string>& lines) {
 }
 
 // Part 2 function
-void part2(const std::vector<std::string>& lines) {
+void part2(std::vector<std::string>& lines) {
 
     std::vector<int> cardCounts(lines.size(), 1);
 
@@ -57,8 +57,10 @@ void part2(const std::vector<std::string>& lines) {
 }
 
 int main() {
-    std::vector<std::string> lines = aoc_util::readFile("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day4\\input.txt");
-    part1(lines); //19855
-    part2(lines); //10378710
+    std::vector<std::string> lines = aoc_util::string::readFile<aoc_util::string::MultipleLines>("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day4\\input.txt");
+
+    aoc_util::time::timeCall<std::chrono::microseconds>("part1", part1, lines); //19855
+    aoc_util::time::timeCall<std::chrono::microseconds>("part2", part2, lines); //10378710
+
     return 0;
 }

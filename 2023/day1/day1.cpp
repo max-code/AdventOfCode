@@ -75,8 +75,8 @@ void part2(const std::vector<std::string>& lines) {
 }
 
 int main() {
-    std::vector<std::string> lines = aoc_util::readFile("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day1\\input.txt");
-    part1(lines); //54561
-    part2(lines); //54076
+    std::vector<std::string> lines = aoc_util::string::readFile<aoc_util::string::MultipleLines>("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day1\\input.txt");
+    aoc_util::time::timeCall<std::chrono::microseconds>("part1", part1, lines);//54561
+    aoc_util::time::timeCall<std::chrono::microseconds>("part2", part2, lines);//54076
     return 0;
 }

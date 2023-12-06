@@ -5,45 +5,39 @@
 using RangeMapping = std::vector<std::vector<std::pair<std::pair<long long, long long>, long long>>>;
 using SeedVector = std::vector<long long>;
 
-std::pair<RangeMapping, SeedVector> buildMappingsAndSeeds(const std::vector<std::string>& lines)
+std::pair<RangeMapping, SeedVector> buildMappingsAndSeeds(std::vector<std::string>& lines)
 {
     RangeMapping mapping;
-    SeedVector seeds;
+
+    aoc_util::string::removeFromString(lines[0], "seeds:");
+    std::vector<long long> seeds = aoc_util::string::splitString<long long>(lines[0], "\\s");
 
     // build mapping
-    for (const std::string& line : lines)
+    std::vector<std::pair<std::pair<long long, long long>, long long>> currentMapping{};
+
+    for (const std::string& line : lines | std::views::drop(1))
     {
-        std::vector<std::string> parts = aoc_util::splitString(line, "[\\n:]+");
-
-        if (parts[0] == "seeds")
+        if (std::isalpha(line[0]))
         {
-            std::vector<std::string> seedsSplit = aoc_util::splitString(parts[1], "[\\s]+");
-            for (auto seed : seedsSplit)
+            if (currentMapping.size() != 0)
             {
-
-                seeds.emplace_back(std::stoll(seed));
+                mapping.push_back(currentMapping);
+                currentMapping.clear();
             }
             continue;
         }
 
-        std::vector<std::pair<std::pair<long long, long long>, long long>> currentMapping;
-
-        for (int partNum = 1; partNum < parts.size(); partNum++)
-        {
-            std::vector<std::string> rangesSplit = aoc_util::splitString(parts[partNum], "[\\s]+");
-            long long destinationRange = std::stoll(rangesSplit[0]), sourceRange = std::stoll(rangesSplit[1]), rangeLength = std::stoll(rangesSplit[2]);
-            currentMapping.push_back({ {sourceRange,sourceRange + rangeLength}, destinationRange - sourceRange });
-
-        }
-
-        mapping.push_back(currentMapping);
+        std::vector<long long> parts = aoc_util::string::splitString<long long>(line, "\\s");
+        currentMapping.push_back({ {parts[1],parts[1] + parts[2]}, parts[0] - parts[1]});
     }
+
+    if (currentMapping.size() != 0) mapping.push_back(currentMapping);
 
     return std::pair<RangeMapping, SeedVector>({ mapping, seeds });
 }
 
 // Part 1 function
-void part1(const std::vector<std::string>& lines) {
+void part1(std::vector<std::string>& lines) {
     auto [mapping, seeds] = buildMappingsAndSeeds(lines);
 
     long long closestLocation = std::numeric_limits<long long>::max();
@@ -54,12 +48,10 @@ void part1(const std::vector<std::string>& lines) {
 
     for (const auto& seed : seeds)
     {
-
         currentPos = seed;
 
         for (const auto& map : mapping) 
         {
-
             foundRange = false;
             rangeIdx = 0;
             while (rangeIdx < map.size() && !foundRange)
@@ -78,7 +70,6 @@ void part1(const std::vector<std::string>& lines) {
             }
         }
         if (currentPos < closestLocation) closestLocation = currentPos;
-
     }
 
     std::cout << closestLocation << std::endl;
@@ -87,7 +78,7 @@ void part1(const std::vector<std::string>& lines) {
 using SeedBounds = std::pair<long long, long long>;
 
 // Part 2 function
-void part2(const std::vector<std::string>& lines) {
+void part2(std::vector<std::string>& lines) {
 
     auto [mapping, seeds] = buildMappingsAndSeeds(lines);
     std::vector<SeedBounds> seedBounds;
@@ -161,9 +152,10 @@ void part2(const std::vector<std::string>& lines) {
 }
 
 int main() {
-    std::vector<std::string> lines = aoc_util::readFileSplitOnBlankLines("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day5\\input.txt");
-    part1(lines); // 340994526
-    part2(lines); // 52210644
+    std::vector<std::string> lines = aoc_util::string::readFile<aoc_util::string::MultipleLines>("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day5\\input.txt");
+
+    aoc_util::time::timeCall<std::chrono::microseconds>("part1", part1, lines); // 340994526
+    aoc_util::time::timeCall<std::chrono::microseconds>("part2", part2, lines); // 52210644
 
 
     return 0;

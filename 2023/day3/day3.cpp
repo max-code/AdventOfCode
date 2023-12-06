@@ -173,9 +173,11 @@ void part2(const std::string& input) {
 
 
 int main() {
-    std::string line = aoc_util::readFileToSingleLine("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day3\\input.txt");
-    part1(line);
-    part2(line);
+    std::string line = aoc_util::string::readFile < aoc_util::string::SingleLine> ("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day3\\input.txt");
+    std::cout << line << std::endl;
+
+    aoc_util::time::timeCall<std::chrono::microseconds>("part1", part1, line); // 535235
+    aoc_util::time::timeCall<std::chrono::microseconds>("part2", part2, line); // 79844424
 
     return 0;
 }

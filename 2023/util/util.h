@@ -8,14 +8,133 @@
 #include <iostream>
 #include <regex>
 #include <chrono>
+#include <functional>
+#include <ranges>
 
 namespace aoc_util
 {
 
-	std::vector<std::string> readFile(const std::string&);
-	std::string readFileToSingleLine(const std::string&);
-	std::vector<std::string> readFileSplitOnBlankLines(const std::string&);
+namespace string {
 
-	std::vector<std::string> splitString(const std::string&, const std::string&);
+    using MultipleLines = std::vector<std::string>;
+    using SingleLine = std::string;
+
+    template<typename... Args>
+    inline std::string buildPattern(Args... args) {
+        std::ostringstream patternStream;
+        // Use fold expression with comma operator to concatenate arguments with '|'
+        ((patternStream << args << '|'), ...);
+        std::string pattern = patternStream.str();
+        pattern.pop_back(); // Remove the trailing '|'
+        return pattern;
+    }
+
+    template <typename T, typename... Args>
+    requires (std::is_arithmetic_v<T> || std::is_same_v<T, std::string>)
+    inline std::vector<T> splitString(const std::string& input, Args... args) {
+        std::string pattern = buildPattern(args...);
+        std::regex regexPattern(pattern);
+
+        std::sregex_token_iterator iter(input.begin(), input.end(), regexPattern, -1);
+        std::sregex_token_iterator end;
+
+        std::vector<T> result;
+        while (iter != end) {
+            if (iter->first != iter->second) { // Check if the sub_match is not empty
+                if constexpr (std::is_arithmetic_v<T>) { // Check if T is numeric
+                    std::stringstream ss(*iter);
+                    T value;
+                    ss >> value;
+                    result.push_back(value);
+                }
+                else {
+                    result.push_back(*iter);
+                }
+            }
+            ++iter;
+        }
+        return result;
+
+    }
+
+    template <typename... Args>
+    inline void removeFromString(std::string& input, Args... args) {
+        std::string pattern = buildPattern(args...);
+        std::regex regexPattern(pattern);
+
+        input = std::regex_replace(input, regexPattern, "");
+    }
+
+    template<typename T>
+    requires (std::is_same_v<std::remove_cvref_t<T>, SingleLine> || std::is_same_v<std::remove_cvref_t<T>, MultipleLines>)
+    inline inline T readFile(const std::string& filePath) {
+        std::ifstream file(filePath, std::ios::binary);
+        if (!file) {
+            throw std::runtime_error("Unable to open file: " + filePath);
+        }
+
+        if constexpr (std::is_same_v<T, SingleLine>) {
+            SingleLine content;
+            file.seekg(0, std::ios::end);
+            content.reserve(file.tellg());
+            file.seekg(0, std::ios::beg);
+
+            content.assign((std::istreambuf_iterator<char>(file)),
+                std::istreambuf_iterator<char>());
+
+            content.erase(std::remove(content.begin(), content.end(), '\n'), content.end());
+            return content;
+        }
+        else {
+            std::vector<std::string> lines;
+            std::string line;
+            while (std::getline(file, line)) {
+                if(line[0] == '\r') continue;
+                if(!line.empty()) lines.push_back(line);
+            }
+            return lines;
+        }
+    }
+
+} //namespace string
+
+namespace time {
+
+    template<typename Resolution>
+    concept isChronoType = requires {
+        typename Resolution::rep;
+        typename Resolution::period;
+        { Resolution::zero() } -> std::same_as<Resolution>;
+    };
+
+    template<typename Resolution>
+    requires isChronoType<Resolution>
+    constexpr inline std::string getDurationUnit() {
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::nanoseconds>) return "nanoseconds";
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::microseconds>) return "microseconds";
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::milliseconds>) return "milliseconds";
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::seconds>) return "seconds";
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::minutes>) return "minutes";
+        if constexpr (std::is_same_v<std::remove_cvref_t<Resolution>, std::chrono::hours>) return "hours";
+        return "unknown units";
+    }
+
+    template<typename Resolution = std::chrono::microseconds, typename Func, typename... Args>
+    requires std::invocable<Func, Args...> && isChronoType<Resolution>
+    inline void timeCall(const std::string& funcName, Func func, Args&&... args) {
+        std::cout << std::flush;
+        auto t1 = std::chrono::high_resolution_clock::now();
+        std::invoke(func, std::forward<Args>(args)...);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        /* Getting number of milliseconds as an integer. */
+        auto ms_int = std::chrono::duration_cast<Resolution>(t2 - t1);
+
+        std::cout << "Function " << funcName << "() took " << ms_int.count() << " " << getDurationUnit<Resolution>() << "\n";
+
+
+    }
+
+} // namespace time
 
 }

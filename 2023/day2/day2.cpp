@@ -9,7 +9,8 @@ void part1(const std::vector<std::string>& lines) {
 
     for (const auto& line : lines) {
         //std::cout << line << std::endl;
-        const std::vector<std::string> games = aoc_util::splitString(line, "[;,:\\s]+");
+        const std::vector<std::string> games = aoc_util::string::splitString<std::string>(line, "\\s", ':', ',', ';');
+
         int gameId = std::stoi(games[1]);
         bool impossibleGame = false;
 
@@ -39,7 +40,7 @@ void part2(const std::vector<std::string>& lines) {
 
     for (const auto& line : lines) {
         //std::cout << line << std::endl;
-        const std::vector<std::string> games = aoc_util::splitString(line, "[;,:\\s]+");
+        const std::vector<std::string> games = aoc_util::string::splitString<std::string>(line, "\\s", ':', ',', ';');
         int minRequiredRedCubes = 0, minRequiredGreenCubes = 0, minRequiredBlueCubes = 0;
 
         for (int j = 3; j < games.size(); j += 2) // Just itterate over the colours
@@ -65,9 +66,8 @@ void part2(const std::vector<std::string>& lines) {
 }
 
 int main() {
-    const std::vector<std::string> lines = aoc_util::readFile("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day2\\input.txt");
-
-    part1(lines);
-    part2(lines);
+    std::vector<std::string> lines = aoc_util::string::readFile<aoc_util::string::MultipleLines>("C:\\Users\\maxjo\\source\\repos\\AdventOfCode\\2023\\day2\\input.txt");
+    aoc_util::time::timeCall<std::chrono::microseconds>("part1", part1, lines); //2169
+    aoc_util::time::timeCall<std::chrono::microseconds>("part2", part2, lines); //60948
     return 0;
 }
