@@ -10,6 +10,7 @@
 #include <chrono>
 #include <functional>
 #include <ranges>
+#include <numeric>
 
 namespace aoc_util
 {
@@ -67,7 +68,7 @@ namespace string {
 
     template<typename T>
     requires (std::is_same_v<std::remove_cvref_t<T>, SingleLine> || std::is_same_v<std::remove_cvref_t<T>, MultipleLines>)
-    inline inline T readFile(const std::string& filePath) {
+    inline T readFile(const std::string& filePath) {
         std::ifstream file(filePath, std::ios::binary);
         if (!file) {
             throw std::runtime_error("Unable to open file: " + filePath);
@@ -136,5 +137,46 @@ namespace time {
     }
 
 } // namespace time
+
+namespace maths
+{
+    template<typename T>
+    requires std::is_arithmetic_v<T>
+    bool isPrime(T x) {
+        if (x <= 1) return false;
+        if (x == 2 || x == 3) return true;
+        if (x % 2 == 0 || x % 3 == 0) return false;
+        if ((x - 1) % 6 != 0 && (x + 1) % 6 != 0) return false;
+        for (int i = 5; i * i <= x; i += 6)
+        {
+            if (x % i == 0 || x % (i + 2) == 0) return false;
+        }
+        return true;
+    }
+
+    template<typename T>
+    concept isArithmeticContainer = requires(T a) {
+        typename T::value_type;
+        requires std::is_arithmetic_v<typename T::value_type>;
+    };
+
+    template<typename ResultType = uint64_t, typename... Numbers>
+    requires ((std::is_integral_v<Numbers> && !std::is_same_v<Numbers, bool>) && ...) && std::is_integral_v<ResultType>
+    auto lcm(Numbers... args) {
+        ResultType currLcm = 1;
+        return ((currLcm = std::lcm(currLcm, args)), ...);
+    }
+
+    template<typename ResultType = uint64_t, typename Container>
+    requires isArithmeticContainer<Container>
+    auto lcm(const Container& container) {
+        ResultType initialValue{1};
+        return std::accumulate(container.begin(), container.end(), initialValue, [](auto a, auto b) { return std::lcm(a, b); });
+    }
+
+
+
+
+} // namespace maths
 
 }

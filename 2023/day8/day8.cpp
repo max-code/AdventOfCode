@@ -91,14 +91,7 @@ void part2(std::vector<std::string>& lines) {
         currentPositionsToZZZ.push_back(moves);
 
     }
-
-    long long result = std::accumulate(currentPositionsToZZZ.begin(), currentPositionsToZZZ.end(), 1LL, [](long long a, int b) {
-        return (a / std::gcd(a, static_cast<long long>(b))) * b;
-        });
-
-    std::cout << result << std::endl;
-
-
+    std::cout << aoc_util::maths::lcm(currentPositionsToZZZ) << std::endl;
 }
 
 int main() {
