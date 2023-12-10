@@ -91,6 +91,7 @@ namespace string {
             std::string line;
             while (std::getline(file, line)) {
                 if(line[0] == '\r') continue;
+                aoc_util::string::removeFromString(line, "\\r", "\\n", "\\t");
                 if(!line.empty()) lines.push_back(line);
             }
             return lines;
@@ -140,8 +141,15 @@ namespace time {
 
 namespace maths
 {
+
     template<typename T>
-    requires std::is_arithmetic_v<T>
+    concept isIntegralContainer = requires(T a) {
+        typename T::value_type;
+            requires std::is_integral_v<typename T::value_type>;
+    };
+
+    template<typename T>
+    requires std::is_integral_v<T>
     bool isPrime(T x) {
         if (x <= 1) return false;
         if (x == 2 || x == 3) return true;
@@ -154,27 +162,36 @@ namespace maths
         return true;
     }
 
-    template<typename T>
-    concept isArithmeticContainer = requires(T a) {
-        typename T::value_type;
-        requires std::is_arithmetic_v<typename T::value_type>;
-    };
-
+    // LCM with N integral types passed in
     template<typename ResultType = uint64_t, typename... Numbers>
-    requires ((std::is_integral_v<Numbers> && !std::is_same_v<Numbers, bool>) && ...) && std::is_integral_v<ResultType>
-    auto lcm(Numbers... args) {
-        ResultType currLcm = 1;
-        return ((currLcm = std::lcm(currLcm, args)), ...);
+        requires ((std::is_integral_v<Numbers> && !std::is_same_v<Numbers, bool>) && ...) && std::is_integral_v<ResultType>
+    ResultType lcm(Numbers... args) {
+        ResultType initialValue{ 1 };
+        return ((initialValue = std::lcm(initialValue, args)), ...);
     }
 
+    // LCM with a container of integral types passed in
     template<typename ResultType = uint64_t, typename Container>
-    requires isArithmeticContainer<Container>
-    auto lcm(const Container& container) {
+        requires isIntegralContainer<Container>
+    ResultType lcm(const Container& container) {
         ResultType initialValue{1};
         return std::accumulate(container.begin(), container.end(), initialValue, [](auto a, auto b) { return std::lcm(a, b); });
     }
 
 
+    // GCD with N integral types passed in
+    template<typename ResultType = uint64_t, typename First, typename... Numbers>
+        requires ((std::is_integral_v<Numbers> && !std::is_same_v<Numbers, bool>) && ...) && std::is_integral_v<ResultType> && std::is_integral_v<First>
+    ResultType gcd(First first, Numbers... args) {
+        return ((first = std::gcd(first, args)), ...);
+    }
+
+    // GCD with a container of integral types passed in
+    template<typename ResultType = uint64_t, typename Container>
+        requires isIntegralContainer<Container>
+    ResultType gcd(const Container& container) {
+        return std::accumulate(container.begin(), container.end(), container[0], [](auto a, auto b) { return std::gcd(a, b); });
+    }
 
 
 } // namespace maths
