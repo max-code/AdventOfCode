@@ -3,7 +3,7 @@
 
 void solve(const std::vector<std::string>& lines, const int& expansionMultiplier)
 {
-    std::vector<aoc_util::datastructures::Point> galaxyCoordinates;
+    std::vector<aoc_util::datastructures::Point<int>> galaxyCoordinates;
     std::vector<int> emptyRows(lines.size(), 1);
     std::vector<int> emptyCols(lines[0].size(), 1);
 

@@ -207,11 +207,13 @@ namespace maths
 
 namespace datastructures
 {
+    template<typename T>
+    requires std::is_arithmetic_v<T>    
     struct Point {
-        int x, y;
+        T x, y;
 
         Point() : x(0), y(0) {}
-        Point(int xVal, int yVal) : x(xVal), y(yVal) {}
+        Point(T xVal, T yVal) : x(xVal), y(yVal) {}
 
         bool operator==(const Point& other) const {
             return x == other.x && y == other.y;
