@@ -33,13 +33,22 @@ namespace string {
     template <typename T, typename... Args>
     requires (std::is_arithmetic_v<T> || std::is_same_v<T, std::string>)
     inline std::vector<T> splitString(const std::string& input, Args... args) {
+
+        std::vector<T> result;
+        if constexpr (std::is_same_v<T, std::string> || std::is_same_v < T, int>) {
+            if (sizeof...(args) == 0) {
+                for (char c : input) {
+                    result.push_back(static_cast<T>(1, c));
+                }
+                return result;
+            }
+        }
+
         std::string pattern = buildPattern(args...);
         std::regex regexPattern(pattern);
 
         std::sregex_token_iterator iter(input.begin(), input.end(), regexPattern, -1);
         std::sregex_token_iterator end;
-
-        std::vector<T> result;
         while (iter != end) {
             if (iter->first != iter->second) { // Check if the sub_match is not empty
                 if constexpr (std::is_arithmetic_v<T>) { // Check if T is numeric
@@ -195,5 +204,23 @@ namespace maths
 
 
 } // namespace maths
+
+namespace datastructures
+{
+    struct Point {
+        int x, y;
+
+        Point() : x(0), y(0) {}
+        Point(int xVal, int yVal) : x(xVal), y(yVal) {}
+
+        bool operator==(const Point& other) const {
+            return x == other.x && y == other.y;
+        }
+
+        bool operator!=(const Point& other) const {
+            return !(*this == other);
+        }
+    };
+} // namespace datastructures
 
 }

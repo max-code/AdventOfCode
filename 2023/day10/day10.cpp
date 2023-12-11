@@ -33,28 +33,6 @@ Pipe charToPipe(const char& c) {
     }
 }
 
-char pipeToChar(Pipe pipe) {
-    switch (pipe) {
-    case Pipe::VERTICAL: return '|';
-    case Pipe::HORIZONTAL: return '-';
-    case Pipe::NORTH_EAST: return 'L';
-    case Pipe::NORTH_WEST: return 'J';
-    case Pipe::SOUTH_EAST: return 'F';
-    case Pipe::SOUTH_WEST: return '7';
-    case Pipe::START: return 'S';
-    case Pipe::BLANK: return '.';
-    }
-}
-
-char dirToChar(Direction d) {
-    switch (d) {
-    case Direction::WEST: return 'W';
-    case Direction::SOUTH: return 'S';
-    case Direction::EAST: return 'E';
-    case Direction::NORTH: return 'N';
-    }
-}
-
 struct Point {
     int x, y;
     // Overload '==' operator
